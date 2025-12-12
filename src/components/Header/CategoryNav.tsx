@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 const categories = [
@@ -70,6 +70,8 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
   const [activeDesktop, setActiveDesktop] = useState<number | null>(null);
   const [activeMobile, setActiveMobile] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const scrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -81,6 +83,38 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // IMPROVED: Instant close on scroll with debounce prevention
+  useEffect(() => {
+    const handleScroll = () => {
+      // Immediately mark as scrolling
+      scrollingRef.current = true;
+
+      // Instantly close dropdown without transition
+      if (activeDesktop !== null) {
+        setActiveDesktop(null);
+      }
+
+      // Clear previous timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Reset scrolling flag after brief delay
+      scrollTimeoutRef.current = setTimeout(() => {
+        scrollingRef.current = false;
+      }, 150);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, [activeDesktop]);
+
   const handleMobileCategoryClick = (index: number) => {
     setActiveMobile(activeMobile === index ? null : index);
   };
@@ -90,6 +124,17 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
       onCategorySelect(categoryTitle, item);
     }
     console.log(`Selected: ${categoryTitle}${item ? ` > ${item}` : ""}`);
+  };
+
+  const handleMouseEnter = (index: number) => {
+    // Don't open dropdown if we're currently scrolling
+    if (!scrollingRef.current) {
+      setActiveDesktop(index);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setActiveDesktop(null);
   };
 
   // Render for mobile menu (sidebar)
@@ -256,8 +301,10 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
           width: 100%;
           background: var(--white);
           border-bottom: 1px solid #e6e6e6;
-          z-index: 9;
-          position: relative;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          isolation: isolate;
         }
 
         /* MAIN BAR */
@@ -269,6 +316,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
           align-items: center;
           justify-content: center;
           gap: 32px;
+          flex-wrap: wrap;
         }
 
         /* CATEGORY ITEM */
@@ -285,6 +333,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
           display: flex;
           align-items: center;
           gap: 4px;
+          z-index: 1001;
         }
 
         .category-item:hover {
@@ -307,58 +356,47 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
           transform: rotate(180deg);
         }
 
-        /* DESKTOP DROPDOWN */
-       .dropdown {
+        /* HOVER BRIDGE - prevents dropdown from closing */
+        .category-item::before {
+          content: '';
           position: absolute;
-          top: calc(100% + 4px); /* Reduced gap from 8px to 4px */
-          left: 50%;
-          transform: translateX(-50%) translateY(4px);
+          bottom: -12px;
+          left: 0;
+          right: 0;
+          height: 12px;
+          background: transparent;
+          z-index: 10000;
+        }
+
+        /* DESKTOP DROPDOWN - NO TRANSITIONS TO PREVENT FLICKER */
+        .dropdown {
+          position: fixed;
           background: var(--white);
           border-radius: 12px;
-          box-shadow: var(--shadow-md);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
           padding: 16px;
           min-width: 240px;
           max-width: 320px;
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
-          transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.3s; /* Added delay before hiding */
+          display: none;
           border: 1px solid #e6e6e6;
-          z-index: 100;
+          z-index: 10001;
         }
 
-        .category-item:hover .dropdown {
-          opacity: 1;
-          visibility: visible;
-          pointer-events: auto;
-          transform: translateX(-50%) translateY(0);
-          transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s; 
-        }
-
-        /* Keep dropdown open when hovering over it */
-        .dropdown:hover {
-          opacity: 1;
-          visibility: visible;
-          pointer-events: auto;
-        }
-        
-        .category-item::after {
-          content: '';
-          position: absolute;
-          bottom: -8px; 
-          left: 0;
-          right: 0;
-          height: 8px;
-          background: transparent;
+        .dropdown.show {
+          display: block;
         }
 
         /* MULTI-COLUMN FOR LARGE DROPDOWNS */
         .dropdown.large {
           min-width: 380px;
           max-width: 480px;
-          display: grid;
+          display: none;
           grid-template-columns: repeat(2, 1fr);
           gap: 8px;
+        }
+
+        .dropdown.large.show {
+          display: grid;
         }
 
         /* DROPDOWN ITEM */
@@ -381,8 +419,18 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
         /* TABLET RESPONSIVE */
         @media (max-width: 1024px) {
           .category-bar {
-            --container-padding: 32px;
-            gap: 24px;
+            --container-padding: 24px;
+            gap: 16px;
+            justify-content: flex-start;
+            overflow-x: auto;
+            overflow-y: hidden;
+            flex-wrap: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+
+          .category-bar::-webkit-scrollbar {
+            display: none;
           }
 
           .category-item {
@@ -398,6 +446,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
           .dropdown.large {
             min-width: 320px;
             max-width: 400px;
+            grid-template-columns: 1fr;
           }
         }
 
@@ -434,53 +483,98 @@ const CategoryNav: React.FC<CategoryNavProps> = ({
       >
         <div className="category-bar">
           {categories.map((cat, index) => (
-            <div
+            <CategoryItem
               key={index}
-              className={`category-item ${
-                cat.items.length === 0 ? "no-dropdown" : ""
-              }`}
-              onMouseEnter={() => setActiveDesktop(index)}
-              onMouseLeave={() => setActiveDesktop(null)}
-              onClick={() =>
-                cat.items.length === 0 && handleItemClick(cat.title)
-              }
-              role="button"
-              tabIndex={0}
-              aria-expanded={
-                cat.items.length > 0 ? activeDesktop === index : undefined
-              }
-              aria-haspopup={cat.items.length > 0}
-            >
-              <span>{cat.title}</span>
-              {cat.items.length > 0 && <ChevronDown className="chevron-icon" />}
-
-              {/* DESKTOP DROPDOWN */}
-              {cat.items.length > 0 && (
-                <div
-                  className={`dropdown ${cat.items.length > 8 ? "large" : ""}`}
-                  role="menu"
-                >
-                  {cat.items.map((item, i) => (
-                    <div
-                      key={i}
-                      className="dropdown-item"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleItemClick(cat.title, item);
-                      }}
-                      role="menuitem"
-                      tabIndex={0}
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+              category={cat}
+              index={index}
+              isActive={activeDesktop === index}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+              handleItemClick={handleItemClick}
+            />
           ))}
         </div>
       </nav>
     </>
+  );
+};
+
+// Separate component for category items to handle positioning
+interface CategoryItemProps {
+  category: { title: string; items: string[] };
+  index: number;
+  isActive: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  handleItemClick: (title: string, item?: string) => void;
+}
+
+const CategoryItem: React.FC<CategoryItemProps> = ({
+  category,
+  isActive,
+  onMouseEnter,
+  onMouseLeave,
+  handleItemClick,
+}) => {
+  const itemRef = useRef<HTMLDivElement>(null);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (isActive && itemRef.current) {
+      const rect = itemRef.current.getBoundingClientRect();
+      setDropdownStyle({
+        top: `${rect.bottom + 8}px`,
+        left: `${rect.left + rect.width / 2}px`,
+        transform: "translateX(-50%)",
+      });
+    }
+  }, [isActive]);
+
+  return (
+    <div
+      ref={itemRef}
+      className={`category-item ${
+        category.items.length === 0 ? "no-dropdown" : ""
+      }`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={() =>
+        category.items.length === 0 && handleItemClick(category.title)
+      }
+      role="button"
+      tabIndex={0}
+      aria-expanded={category.items.length > 0 ? isActive : undefined}
+      aria-haspopup={category.items.length > 0}
+    >
+      <span>{category.title}</span>
+      {category.items.length > 0 && <ChevronDown className="chevron-icon" />}
+
+      {/* DESKTOP DROPDOWN */}
+      {category.items.length > 0 && (
+        <div
+          className={`dropdown ${category.items.length > 8 ? "large" : ""} ${
+            isActive ? "show" : ""
+          }`}
+          style={dropdownStyle}
+          role="menu"
+        >
+          {category.items.map((item, i) => (
+            <div
+              key={i}
+              className="dropdown-item"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleItemClick(category.title, item);
+              }}
+              role="menuitem"
+              tabIndex={0}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

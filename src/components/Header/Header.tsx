@@ -1,31 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CategoryNav from "./CategoryNav";
 import AnnouncementBar from "./AnnouncementBar";
-import { Search, Lock, Heart, User, Menu, X, ShoppingCart } from "lucide-react";
+import { Search, Heart, User, Menu, X, ShoppingCart } from "lucide-react";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hideCategories, setHideCategories] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      // Only hide categories after scrolling down 100px
-      if (currentScrollY > 100 && currentScrollY > lastScrollY) {
-        setHideCategories(true);
-      } else {
-        setHideCategories(false);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -94,17 +74,9 @@ const Header = () => {
           gap: 32px;
         }
 
-        /* CATEGORY NAV WRAPPER - SMOOTH HIDE/SHOW */
+        /* CATEGORY NAV WRAPPER - NO TRANSITIONS */
         .category-nav-wrapper {
-          max-height: 100px;
-          transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-          opacity: 1;
-          overflow: hidden;
-        }
-
-        .category-nav-wrapper.hidden {
-          max-height: 0;
-          opacity: 0;
+          /* Removed all transitions to prevent flickering */
         }
 
         /* LOGO */
@@ -136,7 +108,7 @@ const Header = () => {
 
         .search-bar {
           width: 100%;
-          background: var(--neutral-light);
+          background: #ecfbfdff;
           padding: 12px 20px;
           border-radius: 50px;
           display: flex;
@@ -308,11 +280,11 @@ const Header = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(0,0,0,0.5);
+          background: rgba(0,0,0,0.6);
           opacity: 0;
           pointer-events: none;
           transition: var(--transition);
-          z-index: 998;
+          z-index: 9998;
         }
 
         .mobile-overlay.open {
@@ -320,21 +292,22 @@ const Header = () => {
           pointer-events: auto;
         }
 
-        /* MOBILE MENU */
+        /* MOBILE MENU - FULL SCREEN */
         .mobile-menu {
           position: fixed;
           left: 0;
           top: 0;
-          width: 300px;
-          max-width: 85vw;
+          width: 100%;
           height: 100vh;
+          height: 100dvh;
           background: white;
-          box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-          padding: 24px;
+          padding: 0;
           transform: translateX(-100%);
-          transition: var(--transition);
-          z-index: 999;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 9999;
           overflow-y: auto;
+          display: flex;
+          flex-direction: column;
         }
 
         .mobile-menu.open {
@@ -345,22 +318,26 @@ const Header = () => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 24px;
-          padding-bottom: 16px;
+          padding: 20px 24px;
           border-bottom: 2px solid var(--neutral-light);
+          flex-shrink: 0;
+          background: white;
+          position: sticky;
+          top: 0;
+          z-index: 10;
         }
 
         .mobile-menu-title {
-          font-size: 18px;
-          font-weight: 600;
+          font-size: 20px;
+          font-weight: 700;
           color: var(--neutral-dark);
         }
 
         .close-menu-btn {
           border: none;
           background: var(--neutral-light);
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -375,44 +352,54 @@ const Header = () => {
           color: var(--white);
         }
 
+        /* Scrollable content area */
+        .mobile-menu-content {
+          flex: 1;
+          overflow-y: auto;
+          padding: 24px;
+          padding-bottom: 40px;
+        }
+
         .mobile-menu-profile {
           background: linear-gradient(135deg, var(--primary-pink), var(--primary-gold));
-          padding: 16px;
+          padding: 20px;
           border-radius: 16px;
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 20px;
+          gap: 16px;
+          margin-bottom: 24px;
           color: white;
+          box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
         }
 
         .mobile-menu-profile .avatar {
-          width: 48px;
-          height: 48px;
+          width: 56px;
+          height: 56px;
         }
 
         .mobile-profile-info h3 {
-          font-size: 16px;
-          font-weight: 600;
+          font-size: 18px;
+          font-weight: 700;
           margin-bottom: 4px;
         }
 
         .mobile-profile-info p {
-          font-size: 13px;
-          opacity: 0.9;
+          font-size: 14px;
+          opacity: 0.95;
         }
 
         .mobile-menu-actions {
           display: flex;
           flex-direction: column;
           gap: 10px;
+          padding-bottom: 8px;
         }
 
         .mobile-menu-item {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 14px 16px;
+          gap: 14px;
+          padding: 16px 18px;
           background: var(--neutral-light);
           border: none;
           border-radius: 12px;
@@ -425,7 +412,8 @@ const Header = () => {
           text-align: left;
         }
 
-        .mobile-menu-item:hover {
+        .mobile-menu-item:hover,
+        .mobile-menu-item:active {
           background: var(--primary-pink);
           color: var(--white);
           transform: translateX(4px);
@@ -469,13 +457,6 @@ const Header = () => {
         /* MOBILE MENU CATEGORIES SECTION */
         .mobile-menu-categories {
           margin-top: 0;
-        }
-
-        .mobile-menu-actions {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          padding-bottom: 8px;
         }
 
         /* LARGE DESKTOP */
@@ -563,7 +544,7 @@ const Header = () => {
           }
 
           .search-input {
-            font-size: 13px;
+            font-size: 11px;
           }
 
           .search-wrapper {
@@ -571,7 +552,7 @@ const Header = () => {
           }
 
           .search-bar {
-            padding: 5px 14px;
+            padding: 4px 14px;
             gap: 8px;
           }
 
@@ -613,9 +594,6 @@ const Header = () => {
             gap: 6px;
           }
 
-          .search-input {
-            font-size: 12px;
-          }
 
           .search-input::placeholder {
             font-size: 12px;
@@ -744,9 +722,6 @@ const Header = () => {
 
             {/* RIGHT ACTIONS */}
             <div className="right">
-              <button className="icon-btn" aria-label="Secure checkout">
-                <Lock size={20} />
-              </button>
               <button className="icon-btn" aria-label="Wishlist">
                 <Heart size={20} />
               </button>
@@ -774,10 +749,8 @@ const Header = () => {
           </div>
         </header>
 
-        {/* CATEGORY NAV - HIDES ON SCROLL */}
-        <div
-          className={`category-nav-wrapper ${hideCategories ? "hidden" : ""}`}
-        >
+        {/* CATEGORY NAV - ALWAYS VISIBLE */}
+        <div className="category-nav-wrapper">
           <CategoryNav />
         </div>
       </div>
@@ -788,7 +761,7 @@ const Header = () => {
         onClick={() => setMobileMenuOpen(false)}
       />
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU - FULL SCREEN */}
       <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
         <div className="mobile-menu-header">
           <span className="mobile-menu-title">Menu</span>
@@ -797,44 +770,41 @@ const Header = () => {
             onClick={() => setMobileMenuOpen(false)}
             aria-label="Close menu"
           >
-            <X size={20} />
+            <X size={22} />
           </button>
         </div>
 
-        <div className="mobile-menu-profile">
-          <div className="avatar">
-            <User size={24} />
+        <div className="mobile-menu-content">
+          <div className="mobile-menu-profile">
+            <div className="avatar">
+              <User size={28} />
+            </div>
+            <div className="mobile-profile-info">
+              <h3>Ryman Alex</h3>
+              <p>View Profile</p>
+            </div>
           </div>
-          <div className="mobile-profile-info">
-            <h3>Ryman Alex</h3>
-            <p>View Profile</p>
+
+          <div className="mobile-menu-actions">
+            <button className="mobile-menu-item">
+              <Heart size={20} />
+              <span>Wishlist</span>
+            </button>
+            <button className="mobile-menu-item">
+              <User size={20} />
+              <span>Account Settings</span>
+            </button>
           </div>
-        </div>
 
-        <div className="mobile-menu-actions">
-          <button className="mobile-menu-item">
-            <Heart size={20} />
-            <span>Wishlist</span>
-          </button>
-          <button className="mobile-menu-item">
-            <Lock size={20} />
-            <span>Secure Checkout</span>
-          </button>
-          <button className="mobile-menu-item">
-            <User size={20} />
-            <span>Account Settings</span>
-          </button>
-        </div>
+          <div className="menu-section-divider">
+            <div className="divider-line"></div>
+            <span className="divider-text">Browse Categories</span>
+            <div className="divider-line"></div>
+          </div>
 
-        <div className="menu-section-divider">
-          <div className="divider-line"></div>
-          <span className="divider-text">Browse Categories</span>
-          <div className="divider-line"></div>
-        </div>
-
-        <div className="mobile-menu-categories">
-          <div className="category-section-title">Categories</div>
-          <CategoryNav isMobileMenuOpen={mobileMenuOpen} />
+          <div className="mobile-menu-categories">
+            <CategoryNav isMobileMenuOpen={mobileMenuOpen} />
+          </div>
         </div>
       </div>
     </>

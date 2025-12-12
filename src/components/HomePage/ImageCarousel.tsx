@@ -23,6 +23,15 @@ const ImageCarousel = () => {
     };
   }, [current]);
 
+  // Close carousel interaction on scroll (optional enhancement)
+  useEffect(() => {
+    const handleScroll = () => {
+      // Reset any hover states if needed
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleDotClick = (index: number) => {
     setCurrent(index);
   };
@@ -55,6 +64,8 @@ const ImageCarousel = () => {
           justify-content: center;
           padding: 20px 0 0 0;
           background: #ffffff;
+          position: relative;
+          z-index: 1; /* Lower than nav dropdown */
         }
 
         /* MATCHES HEADER WIDTH */
@@ -72,6 +83,7 @@ const ImageCarousel = () => {
           overflow: hidden;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
           background: #f5f5f5;
+          isolation: isolate; /* Creates new stacking context */
         }
 
         /* PRINTO-STYLE ASPECT RATIO - Shorter/Wider */
