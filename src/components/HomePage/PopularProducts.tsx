@@ -8,7 +8,6 @@ const products = [
     img: "assets/document.jpg",
     tag: "Best Seller",
   },
-
   {
     title: "Custom T-Shirts",
     description: "Perfect for events, branding & gifts",
@@ -16,7 +15,6 @@ const products = [
     img: "assets/t-shirt.jpg",
     tag: "Best Seller",
   },
-
   {
     title: "PVC Banners",
     description: "Durable outdoor promotional banners",
@@ -132,8 +130,8 @@ const PopularProducts = () => {
           cursor: pointer;
           position: relative;
           border: 1px solid transparent;
-          display: grid;
-          grid-template-rows: auto 1fr;
+          display: flex;
+          flex-direction: column;
           height: 100%;
         }
 
@@ -150,13 +148,14 @@ const PopularProducts = () => {
           height: 260px;
           overflow: hidden;
           background: var(--neutral-light);
+          flex-shrink: 0;
         }
 
         .product-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: top center;
+          object-position: center;
           transition: var(--transition);
         }
 
@@ -222,6 +221,7 @@ const PopularProducts = () => {
           display: flex;
           flex-direction: column;
           gap: 10px;
+          flex: 1;
         }
 
         .product-title {
@@ -237,6 +237,7 @@ const PopularProducts = () => {
           color: var(--neutral-medium);
           line-height: 1.5;
           margin: 0;
+          flex: 1;
         }
 
         /* PRODUCT FOOTER - SIDE BY SIDE */
@@ -253,6 +254,7 @@ const PopularProducts = () => {
           color: var(--primary-pink);
           font-weight: 700;
           white-space: nowrap;
+          flex-shrink: 0;
         }
 
         .product-btn {
@@ -270,6 +272,7 @@ const PopularProducts = () => {
           align-items: center;
           justify-content: center;
           gap: 6px;
+          white-space: nowrap;
         }
 
         .product-btn:hover {
@@ -280,103 +283,17 @@ const PopularProducts = () => {
         .product-btn svg {
           width: 16px;
           height: 16px;
-        }
-
-        /* EXTRA LARGE DESKTOP */
-        @media (min-width: 1600px) {
-          .products-grid {
-            gap: 28px;
-          }
-
-          .product-img-container {
-            height: 280px;
-          }
-
-          .product-content {
-            padding: 20px;
-            gap: 12px;
-          }
-
-          .product-title {
-            font-size: 17px;
-          }
-
-          .product-description {
-            font-size: 14px;
-          }
-
-          .product-price {
-            font-size: 20px;
-          }
-
-          .product-btn {
-            padding: 11px 18px;
-            font-size: 14px;
-          }
-        }
-
-        /* LARGE DESKTOP */
-        @media (min-width: 1440px) and (max-width: 1599px) {
-          .products-title {
-            font-size: 34px;
-          }
-
-          .product-img-container {
-            height: 270px;
-          }
-
-          .product-price {
-            font-size: 19px;
-          }
-        }
-
-        /* STANDARD DESKTOP */
-        @media (min-width: 1280px) and (max-width: 1439px) {
-          .products-grid {
-            gap: 22px;
-          }
-
-          .product-img-container {
-            height: 250px;
-          }
-
-          .product-price {
-            font-size: 17px;
-          }
-        }
-
-        /* SMALL DESKTOP / LARGE TABLET */
-        @media (max-width: 1279px) and (min-width: 1025px) {
-          .products-container {
-            --container-padding: 40px;
-          }
-
-          .products-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-          }
-
-          .product-img-container {
-            height: 240px;
-          }
-
-          .product-price {
-            font-size: 16px;
-          }
+          flex-shrink: 0;
         }
 
         /* TABLET */
-        @media (max-width: 1024px) and (min-width: 769px) {
+        @media (max-width: 1024px) {
           .products-container {
             --container-padding: 32px;
           }
 
           .products-section {
             padding: 48px 0;
-          }
-
-          .products-header {
-            margin-bottom: 40px;
           }
 
           .products-title {
@@ -391,29 +308,8 @@ const PopularProducts = () => {
           .product-img-container {
             height: 220px;
           }
-
-          .product-content {
-            padding: 16px;
-          }
-
-          .product-title {
-            font-size: 15px;
-          }
-
-          .product-description {
-            font-size: 12px;
-          }
-
-          .product-price {
-            font-size: 16px;
-          }
-
-          .product-btn {
-            font-size: 12px;
-          }
         }
 
-        /* MOBILE - 2 COLUMNS */
         @media (max-width: 768px) {
           .products-container {
             --container-padding: 16px;
@@ -436,12 +332,12 @@ const PopularProducts = () => {
           }
 
           .products-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 16px;
           }
 
           .product-img-container {
-            height: 180px;
+            height: 200px;
           }
 
           .product-content {
@@ -455,6 +351,7 @@ const PopularProducts = () => {
 
           .product-description {
             font-size: 12px;
+            line-height: 1.4;
           }
 
           .product-footer {
@@ -462,11 +359,11 @@ const PopularProducts = () => {
           }
 
           .product-price {
-            font-size: 15px;
+            font-size: 14px;
           }
 
           .product-btn {
-            padding: 9px 12px;
+            padding: 8px 10px;
             font-size: 11px;
             gap: 4px;
           }
@@ -478,8 +375,8 @@ const PopularProducts = () => {
 
           .wishlist-btn {
             opacity: 1;
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             top: 10px;
             left: 10px;
           }
@@ -497,8 +394,7 @@ const PopularProducts = () => {
           }
         }
 
-        /* SMALL MOBILE */
-        @media (max-width: 480px) {
+        @media (max-width: 430px) {
           .products-section {
             padding: 36px 0;
           }
@@ -512,16 +408,16 @@ const PopularProducts = () => {
           }
 
           .products-grid {
-            grid-template-columns: repeat(2, 1fr);
             gap: 14px;
           }
 
           .product-img-container {
-            height: 170px;
+            height: 180px;
           }
 
           .product-content {
             padding: 12px;
+            gap: 7px;
           }
 
           .product-title {
@@ -532,20 +428,29 @@ const PopularProducts = () => {
             font-size: 11px;
           }
 
+          .product-footer {
+            gap: 6px;
+          }
+
           .product-price {
-            font-size: 14px;
+            font-size: 13px;
           }
 
           .product-btn {
-            padding: 8px 10px;
+            padding: 7px 8px;
             font-size: 10px;
+            gap: 3px;
+          }
+
+          .product-btn svg {
+            width: 13px;
+            height: 13px;
           }
         }
 
-        /* EXTRA SMALL MOBILE */
-        @media (max-width: 375px) {
+        @media (max-width: 390px) {
           .products-container {
-            --container-padding: 12px;
+            --container-padding: 14px;
           }
 
           .products-section {
@@ -565,7 +470,7 @@ const PopularProducts = () => {
           }
 
           .product-img-container {
-            height: 160px;
+            height: 165px;
           }
 
           .product-content {
@@ -573,22 +478,96 @@ const PopularProducts = () => {
             gap: 6px;
           }
 
+          .product-title {
+            font-size: 12px;
+            line-height: 1.2;
+          }
+
+          .product-description {
+            font-size: 10px;
+            line-height: 1.3;
+          }
+
           .product-footer {
-            gap: 6px;
+            gap: 5px;
           }
 
           .product-price {
-            font-size: 13px;
+            font-size: 12px;
           }
 
           .product-btn {
-            padding: 7px 8px;
+            padding: 6px 7px;
             font-size: 9px;
+            gap: 2px;
+            min-width: 0;
+          }
+
+          .product-btn svg {
+            width: 12px;
+            height: 12px;
+          }
+
+          .wishlist-btn {
+            width: 28px;
+            height: 28px;
+            top: 8px;
+            left: 8px;
+          }
+
+          .wishlist-btn svg {
+            width: 14px;
+            height: 14px;
+          }
+
+          .product-tag {
+            top: 8px;
+            right: 8px;
+            padding: 3px 7px;
+            font-size: 8px;
+          }
+        }
+        @media (max-width: 375px) {
+          .products-container {
+            --container-padding: 12px;
+          }
+
+          .products-grid {
+            gap: 11px;
+          }
+
+          .product-img-container {
+            height: 155px;
+          }
+
+          .product-content {
+            padding: 9px;
+          }
+
+          .product-title {
+            font-size: 11.5px;
+          }
+
+          .product-description {
+            font-size: 9.5px;
+          }
+
+          .product-price {
+            font-size: 11.5px;
+          }
+
+          .product-btn {
+            padding: 5px 6px;
+            font-size: 8.5px;
           }
         }
 
-        /* TINY MOBILE */
+        /* TINY MOBILE - Older iPhones (320px) */
         @media (max-width: 320px) {
+          .products-container {
+            --container-padding: 10px;
+          }
+
           .products-title {
             font-size: 18px;
           }
@@ -601,21 +580,34 @@ const PopularProducts = () => {
             height: 140px;
           }
 
+          .product-content {
+            padding: 8px;
+          }
+
           .product-title {
-            font-size: 12px;
+            font-size: 11px;
           }
 
           .product-description {
-            font-size: 10px;
+            font-size: 9px;
+          }
+
+          .product-footer {
+            gap: 4px;
           }
 
           .product-price {
-            font-size: 12px;
+            font-size: 11px;
           }
 
           .product-btn {
-            padding: 6px 8px;
-            font-size: 9px;
+            padding: 5px 5px;
+            font-size: 8px;
+          }
+
+          .product-btn svg {
+            width: 11px;
+            height: 11px;
           }
         }
 
