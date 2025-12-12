@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import CategoryNav from "./CategoryNav";
 import AnnouncementBar from "./AnnouncementBar";
 import { Search, Lock, Heart, User, Menu, X, ShoppingCart } from "lucide-react";
