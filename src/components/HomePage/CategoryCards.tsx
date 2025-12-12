@@ -1,23 +1,23 @@
 const categories = [
   {
     title: "Document Printing",
-    img: "/assets/document.jpg",
+    img: "assets/document.jpg",
   },
   {
     title: "Marketing Prints",
-    img: "/assets/marketing.webp",
+    img: "assets/marketing.webp",
   },
   {
     title: "Clothing & Apparel",
-    img: "/assets/apparel.jpg",
+    img: "assets/apparel.jpg",
   },
   {
     title: "Personalized Gifts",
-    img: "/assets/gifts.jpg",
+    img: "assets/gifts.jpg",
   },
   {
     title: "Large Format & Outdoor",
-    img: "/assets/outdoor.jpg",
+    img: "assets/outdoor.jpg",
   },
 ];
 
