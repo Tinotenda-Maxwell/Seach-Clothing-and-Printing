@@ -715,7 +715,7 @@ const Header = () => {
             {/* LOGO */}
             <div className="logo-container">
               <img
-                src="/assets/logo.png"
+                src="assets/logo.png"
                 alt="Seach Clothing & Printing"
                 className="logo"
               />

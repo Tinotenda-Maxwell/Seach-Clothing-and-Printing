@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from "react";
 
 const ImageCarousel = () => {
   const images = [
-    "/assets/print2.jpg",
-    "/assets/print1.jpg",
-    "/assets/print3.jpg",
+    "assets/print2.jpg",
+    "assets/print1.jpg",
+    "assets/print3.jpg",
   ];
 
   const [current, setCurrent] = useState(0);
